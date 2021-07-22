@@ -156,7 +156,9 @@ module.exports = function (module) {
 		const data = {};
 		fields.forEach((field) => {
 			field = helpers.fieldToString(field);
-			data[field] = 1;
+			if (field) {
+				data[field] = 1;
+			}
 		});
 
 		const item = await module.client.collection('objects').findOne({ _key: key }, { projection: data });
@@ -220,7 +222,15 @@ module.exports = function (module) {
 			return result.map(data => data && data[field]);
 		}
 
-		const result = await module.client.collection('objects').findOneAndUpdate({ _key: key }, { $inc: increment }, { returnOriginal: false, upsert: true });
+		const result = await module.client.collection('objects').findOneAndUpdate({
+			_key: key,
+		}, {
+			$inc: increment,
+		}, {
+			returnDocument: 'after',
+			upsert: true,
+		});
+
 		cache.del(key);
 		return result && result.value ? result.value[field] : null;
 	};

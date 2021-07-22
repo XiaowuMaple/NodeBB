@@ -240,22 +240,25 @@ ajaxify = window.ajaxify || {};
 			.forEach(function (el) {
 				document.head.removeChild(el);
 			});
-
-		// Add new meta tags
-		ajaxify.data._header.tags.meta
-			.filter(function (tagObj) {
-				var name = tagObj.name || tagObj.property;
-				return metaWhitelist.some(function (exp) {
-					return !!exp.test(name);
+		require(['translator'], function (translator) {
+			// Add new meta tags
+			ajaxify.data._header.tags.meta
+				.filter(function (tagObj) {
+					var name = tagObj.name || tagObj.property;
+					return metaWhitelist.some(function (exp) {
+						return !!exp.test(name);
+					});
+				}).forEach(async function (tagObj) {
+					if (tagObj.content) {
+						tagObj.content = await translator.translate(tagObj.content);
+					}
+					var metaEl = document.createElement('meta');
+					Object.keys(tagObj).forEach(function (prop) {
+						metaEl.setAttribute(prop, tagObj[prop]);
+					});
+					document.head.appendChild(metaEl);
 				});
-			})
-			.forEach(function (tagObj) {
-				var metaEl = document.createElement('meta');
-				Object.keys(tagObj).forEach(function (prop) {
-					metaEl.setAttribute(prop, tagObj[prop]);
-				});
-				document.head.appendChild(metaEl);
-			});
+		});
 
 		// Delete the old link tags
 		Array.prototype.slice
@@ -473,10 +476,11 @@ $(document).ready(function () {
 			var href = $this.attr('href');
 			var internalLink = utils.isInternalURI(this, window.location, config.relative_path);
 
+			const rootAndPath = new RegExp(`^${rootUrl}${config.relative_path}/?`);
 			var process = function () {
 				if (!e.ctrlKey && !e.shiftKey && !e.metaKey && e.which === 1) {
 					if (internalLink) {
-						var pathname = this.href.replace(rootUrl + config.relative_path + '/', '');
+						var pathname = this.href.replace(rootAndPath, '');
 
 						// Special handling for urls with hashes
 						if (window.location.pathname === this.pathname && this.hash.length) {

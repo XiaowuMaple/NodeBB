@@ -33,6 +33,7 @@
 	"analytics": "נתח",
 	"view-category": "הצג קטגוריה",
 	"set-order": "Set order",
+	"set-order-help": "Setting the order of the category will move this category to that order and update the order of other categories as necessary. Minimum order is 1 which puts the category at the top.",
 
 	"select-category": "בחר קטגוריה",
 	"set-parent-category": "הגדר קטגוריית אב",
@@ -49,8 +50,8 @@
 	"privileges.no-users": "אין הרשאות ספציפיות למשתמש בקטגוריה זו.",
 	"privileges.section-group": "קבוצה",
 	"privileges.group-private": "קבוצה זו פרטית",
-  	"privileges.inheritance-exception": "This group does not inherit privileges from registered-users group",
-  	"privileges.banned-user-inheritance": "Banned users inherit privileges from banned-users group",
+  	"privileges.inheritance-exception": "לקבוצה זו אין הרשאות של קבוצת משתמשים רשומים",
+  	"privileges.banned-user-inheritance": "למשתמשים מורחקים יש הרשאות של קבוצת משתמשים מורחקים",
 	"privileges.search-group": "הוסף קבוצה",
 	"privileges.copy-to-children": "העתק לצאצאים",
 	"privileges.copy-from-category": "העתק מקטגוריה",

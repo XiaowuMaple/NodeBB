@@ -1,3 +1,231 @@
+#### v1.17.2 (2021-07-07)
+
+##### Chores
+
+* **deps:**
+  *  update coverallsapp/github-action action to v1.1.3 (99c23037)
+  *  update dependency eslint to v7.30.0 (725e70e9)
+  *  update dependency coveralls to v3.1.1 (edefac96)
+  *  update dependency eslint to v7.29.0 (2700f717)
+  *  update dependency eslint to v7.28.0 (fac0bcbd)
+  *  update dependency smtp-server to v3.9.0 (86723292)
+  *  update dependency eslint-plugin-import to v2.23.4 (886d65f6)
+  *  update dependency eslint-plugin-import to v2.23.3 (c3b0e2fa)
+*  lint (2b42e7ed)
+*  fix indentation (d07229aa)
+*  up rewards (ca9ca876)
+*  incrementing version number - v1.17.1 (0aad1312)
+*  update changelog for v1.17.1 (1e6ed0ad)
+
+##### Documentation Changes
+
+*  add undoTimeout (2db77b0c)
+
+##### New Features
+
+*  add merge/fork hooks (c9348efb)
+*  #9628, allow setting custom icon names (2fe30b6f)
+*  #9617 update fa link (52596902)
+*  add bodyClass to 500 page (46a454f1)
+*  clear reset tokens on successful login (f9728aff)
+*  add filter:categories.categorySearch (be19f27f)
+*  allow nested properties on category page (#9601) (cc0cf99f)
+*  show ip on acp manage users (8ea58432)
+*  add undoTimeout to moving posts as well #9599 (e588948f)
+*  make undoTimeout configurable, closes #9599 (05cc7ccb)
+*  introduce boolean res.locals flag to bypass session reroll (used by session-sharing) (816856b0)
+*  allow modifying default category privileges (57e46e41)
+*  add filter:notifications.create (ac7b093f)
+*  pass req.query to getUnreadData (3d5fef6e)
+*  added GET user route for api v3 (d2960aeb)
+
+##### Bug Fixes
+
+* **docs:**  #9648 (e03782f2)
+* **deps:**
+  *  update dependency mongodb to v3.6.10 (f17625fb)
+  *  update dependency nodebb-theme-persona to v11.0.25 (c11927c5)
+  *  update dependency sortablejs to v1.14.0 (5ff9319f)
+  *  update dependency nodebb-theme-persona to v11.0.24 (c7feea56)
+  *  update dependency nodebb-plugin-composer-default to v6.5.33 (3611b04e)
+  *  update dependency nodebb-plugin-markdown to v8.14.0 (e40f648f)
+  *  update dependency nodebb-plugin-markdown to v8.13.1 (cf6fcc21)
+  *  update dependency nodebb-plugin-composer-default to v6.5.32 (#9626) (90e3f5ac)
+  *  update dependency nodebb-plugin-composer-default to v6.5.30 (#9624) (2060dc61)
+  *  update dependency postcss to v8.3.5 (09aebbda)
+  *  update dependency postcss to v8.3.4 (520050da)
+  *  update dependency postcss to v8.3.3 (c7006ec6)
+  *  update dependency ioredis to v4.27.6 (82b33dc4)
+  *  bump persona (f4eb336a)
+  *  update dependency postcss to v8.3.2 (88f21e91)
+  *  update dependency postcss to v8.3.1 (71b4d634)
+  *  update dependency ioredis to v4.27.5 (9f74caf6)
+  *  update dependency connect-redis to v6 (#9590) (6632b2b6)
+  *  update dependency ioredis to v4.27.4 (4ffd234f)
+  *  update dependency nodebb-theme-persona to v11.0.21 (062928d2)
+  *  update dependency mongodb to v3.6.9 (d8c64479)
+  *  update dependency autoprefixer to v10.2.6 (3aeac357)
+*  #9634, re-jig top bar of Admin > Manage > Users (b8964843)
+*  hide private user data in api/v3/users/[uid] (97c8569a)
+*  numThumb upgrade script (d9e2190a)
+*  acp dashboard sometimes not loading on cold load (fee782c4)
+*  #9636, sanitize all attributes in meta and link tags (84904976)
+*  convert some hooks to use hooks module (09bac6bd)
+*  #9627 (acdbd049)
+*  #9629, translate content property of meta tags (561ce7d3)
+*  prevent crash in expandObjBy #9618 (ab6f062f)
+*  dont show system tags in whitelist dropdown to regular users (0d975bc4)
+*  #9622 (#9623) (84e06575)
+*  #9620, fix notif delay (73f40e96)
+*  #9619, add group chat filter to /notifications (c92fc19b)
+*  scope (3cd9434b)
+*  #9615, catch exceptions in renderOverride (1eda538d)
+*  purge uploaded images accordingly #9606 (#9611) (8168c6c4)
+*  keep query params when switching chat (7b4c0a16)
+*  accidental unnecessarily strict conditional that effectively rendered SSO state checking opt-in instead of opt-out (a2400f6b)
+*  introduce artificial delay + delay fudging on invalid email during reset token generation (f6c14d6b)
+*  #9605, expire all active reset tokens for a uid if that uid generates a new one (229f96f8)
+*  lint (8c952aa3)
+*  schema (39e13591)
+*  pagination on acp users search (6695927e)
+*  #9596, incorrect placeholder string in some translations (93d94564)
+*  extra ')' (6f732611)
+*  disallow editing of other users' notes (edcba61a)
+*  #9592, check session (286644d0)
+*  don't crash if session doesn't exist (3717df61)
+*  lint (66cae54e)
+*  improper use of filename extensions (16e0bca5)
+*  return null (d8d6c989)
+*  updates navigation menu user icon (f9b248b8)
+*  returnOriginal deprecation (3fb74445)
+*  error when trying to trim an object (48b8e3bb)
+* **post-queue:**  moderatedCids is an array of numbers (#9631) (db65360c)
+
+##### Performance Improvements
+
+*  cache Topics.getTopicsTags (8e0561f2)
+*  bypass getMultipleUserSettings (10ddfff3)
+
+##### Tests
+
+*  fixed broken tests from #9605, removed token clean on token usage as it is superceded by token clean on generation (+ associated test) (5c42b3ea)
+
+#### v1.17.1 (2021-05-26)
+
+##### Chores
+
+* **deps:**
+  *  update dependency grunt to v1.4.1 (0e37bbfd)
+  *  update dependency jsdom to v16.6.0 (60170ad6)
+  *  update dependency eslint to v7.27.0 (298af98d)
+  *  update dependency eslint-plugin-import to v2.23.0 (1623ba4f)
+  *  update commitlint monorepo to v12.1.4 (4a01313d)
+  *  update commitlint monorepo to v12.1.3 (b82774c5)
+  *  update dependency eslint to v7.26.0 (d1418210)
+  *  update dependency lint-staged to v11 (1bf57d40)
+  *  update dependency mocha to v8.4.0 (461e187b)
+  *  update dependency eslint to v7.25.0 (32c20806)
+  *  update dependency grunt to v1.4.0 (a30deef3)
+*  incrementing version number - v1.17.0 (75f7972b)
+*  update changelog for v1.17.0 (4c441a1b)
+
+##### Documentation Changes
+
+*  update API docs to better outline authentication options (6ef0c8e9)
+*  update API authentication verbiage (d08d0c42)
+
+##### New Features
+
+*  keep query string when redirecting category (77dde41f)
+*  add req.query to flags.list/getCount (3d6bdeb3)
+*  add filter:flags.getFlagIdsWithFilters (d35c64b1)
+*  #9559, set order help text (f5847f4f)
+*  add filter:user.getWatchedCategories (4afca690)
+*  pass req.query to getUserDataByUserSlug (518157d9)
+*  #9508, add cluster support (94c12e37)
+*  #9551 (a3d6c56e)
+*  add template to hook (1f3e6601)
+*  add filter:account.getPostsFromUserSet (a2442ee9)
+*  automatically attempt reconnection on window focus (8cc61f11)
+*  #9533, allow redirect in build hooks (f6b583bb)
+*  add _hooks metadata object to all hooks that have object-type params (46899cca)
+*  add filter:categories.copySettingsFrom (d8e4fd4c)
+*  guard against multiple resolves (084c9851)
+*  #9511 send notifications on accept/reject (b40fc4b6)
+*  `hidden` class to FOUC (2bfa63ae)
+*  add filter:middleware.autoLocale (a478dc7e)
+*  remove sync hooks support (01956af4)
+
+##### Bug Fixes
+
+*  #9580, proper 404 when ajaxifying (9ebfdeb7)
+*  lint (09f51792)
+*  #9567 fix tests (951e71a0)
+*  #9567, use regular 404 (5215c30a)
+*  ioredis upgrade fix, maybe (1ce59508)
+*  bug where interstitial errors were not properly passed to the front-end via req.flash (1d9cfe1e)
+*  #9553, use same fields for user search results in acp (0551642a)
+*  lint (e8c5c18a)
+*  lint (ffa80163)
+*  tests (fad5988e)
+*  tests (074ee859)
+*  wrong error message checked (a9bb1088)
+*  #9507 session reroll causes socket.io to become confused (#9534) (ec6d1e23)
+*  isObjectField(s) empty field (2c22b06f)
+*  do not register SW for Safari until upstream fixes #9193 (ce5fea2a)
+*  infinite scroll with small number of items #9524 (#9525) (cb1dd0a3)
+*  #9519 unable to properly ajaxify to home on subfolder installs if anchor did not have a trailing slash (db48b952)
+*  #9512, fix chat icon if no privileges (6ed8890c)
+*  #9503, dont error in markUnread if room doesnt exist (308252f5)
+*  use socket.request.headers (9e07efc1)
+*  buildReqObject headers for socket.io calls (ed534f34)
+* **deps:**
+  *  update dependency sharp to v0.28.3 (963a9fe6)
+  *  update dependency ioredis to v4.27.3 (075dab27)
+  *  update dependency nodebb-theme-vanilla to v12.0.8 (#9574) (10290f54)
+  *  update dependency mongodb to v3.6.8 (#9573) (64935787)
+  *  update dependency postcss to v8.3.0 (ad4afd59)
+  *  update dependency nodebb-theme-persona to v11.0.20 (403bcfac)
+  *  update dependency nodebb-plugin-composer-default to v6.5.29 (8d7e4420)
+  *  update dependency mongodb to v3.6.7 (f29e4e87)
+  *  update dependency textcomplete to ^0.18.0 (9b7653cc)
+  *  update socket.io packages to v4.1.2 (#9563) (ca7c77bc)
+  *  update dependency nodebb-plugin-dbsearch to v5.0.2 (#9562) (2d0564cb)
+  *  update dependency nodebb-theme-slick to v1.4.7 (bf4aa50c)
+  *  update dependency nodebb-plugin-composer-default to v6.5.28 (4164b322)
+  *  update socket.io packages to v4.1.1 (155a7fb6)
+  *  update socket.io packages to v4.1.0 (53335677)
+  *  update dependency sharp to v0.28.2 (4bc07a08)
+  *  update dependency postcss to v8.2.15 (7770c2a1)
+  *  update dependency nodebb-theme-persona to v11.0.19 (3145c7d5)
+  *  update dependency nodebb-plugin-mentions to v2.13.11 (7e2ea4df)
+  *  update dependency nodebb-plugin-markdown to v8.12.10 (2ac5a085)
+  *  update dependency nodebb-plugin-markdown to v8.12.9 (ee3634cc)
+  *  update socket.io packages to v4.0.2 (ff98f854)
+  *  update dependency postcss to v8.2.14 (22ec1ea5)
+  *  update dependency sitemap to v7 (0389dd96)
+  *  update dependency nodebb-widget-essentials to v5.0.4 (19f1cbfc)
+  *  update dependency nodebb-theme-persona to v11.0.18 (33d91fde)
+  *  update dependency connect-redis to v5.2.0 (c0d54a06)
+  *  update dependency postcss to v8.2.13 (831e5c26)
+  *  update dependency postcss to v8.2.12 (38454df9)
+* **#9508:**  switch to ioredis (#9545) (dd81dd03)
+
+##### Refactors
+
+*  cli/upgrade async/await (#9558) (ac86937c)
+*  bubble other errors (0096cf17)
+
+##### Reverts
+
+*  sync hooks (5fe97b9c)
+
+##### Tests
+
+*  fix tests (1029a06a)
+*  fix redis tests (4e490f60)
+*  add test for undefined fields in getObjectsFields (92de49be)
+
 #### v1.17.0 (2021-04-22)
 
 ##### Breaking Changes

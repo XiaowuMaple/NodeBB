@@ -102,7 +102,6 @@ Flags.get = async function (flagId) {
 	if (!base) {
 		return;
 	}
-
 	const flagObj = {
 		state: 'open',
 		assignee: null,
@@ -121,13 +120,13 @@ Flags.get = async function (flagId) {
 	return data.flag;
 };
 
-Flags.getCount = async function ({ uid, filters }) {
+Flags.getCount = async function ({ uid, filters, query }) {
 	filters = filters || {};
-	const flagIds = await Flags.getFlagIdsWithFilters({ filters, uid });
+	const flagIds = await Flags.getFlagIdsWithFilters({ filters, uid, query });
 	return flagIds.length;
 };
 
-Flags.getFlagIdsWithFilters = async function ({ filters, uid }) {
+Flags.getFlagIdsWithFilters = async function ({ filters, uid, query }) {
 	let sets = [];
 	const orSets = [];
 
@@ -167,7 +166,13 @@ Flags.getFlagIdsWithFilters = async function ({ filters, uid }) {
 		}
 	}
 
-	return flagIds;
+	const result = await plugins.hooks.fire('filter:flags.getFlagIdsWithFilters', {
+		filters,
+		uid,
+		query,
+		flagIds,
+	});
+	return result.flagIds;
 };
 
 Flags.list = async function (data) {
@@ -175,6 +180,7 @@ Flags.list = async function (data) {
 	let flagIds = await Flags.getFlagIdsWithFilters({
 		filters,
 		uid: data.uid,
+		query: data.query,
 	});
 	flagIds = await Flags.sort(flagIds, data.sort);
 
@@ -307,6 +313,11 @@ Flags.getNotes = async function (flagId) {
 };
 
 Flags.getNote = async function (flagId, datetime) {
+	datetime = parseInt(datetime, 10);
+	if (isNaN(datetime)) {
+		throw new Error('[[error:invalid-data]]');
+	}
+
 	let notes = await db.getSortedSetRangeByScoreWithScores(`flag:${flagId}:notes`, 0, 1, datetime, datetime);
 	if (!notes.length) {
 		throw new Error('[[error:invalid-data]]');
@@ -355,6 +366,11 @@ async function modifyNotes(notes) {
 }
 
 Flags.deleteNote = async function (flagId, datetime) {
+	datetime = parseInt(datetime, 10);
+	if (isNaN(datetime)) {
+		throw new Error('[[error:invalid-data]]');
+	}
+
 	const note = await db.getSortedSetRangeByScore(`flag:${flagId}:notes`, 0, 1, datetime, datetime);
 	if (!note.length) {
 		throw new Error('[[error:invalid-data]]');
@@ -603,8 +619,10 @@ Flags.update = async function (flagId, uid, changeset) {
 				}
 			}
 		} else if (prop === 'assignee') {
+			if (changeset[prop] === '') {
+				tasks.push(db.sortedSetRemove(`flags:byAssignee:${changeset[prop]}`, flagId));
 			/* eslint-disable-next-line */
-			if (!await isAssignable(parseInt(changeset[prop], 10))) {
+			} else if (!await isAssignable(parseInt(changeset[prop], 10))) {
 				delete changeset[prop];
 			} else {
 				tasks.push(db.sortedSetAdd(`flags:byAssignee:${changeset[prop]}`, now, flagId));
@@ -694,7 +712,14 @@ Flags.appendHistory = async function (flagId, uid, changeset) {
 
 Flags.appendNote = async function (flagId, uid, note, datetime) {
 	if (datetime) {
-		await Flags.deleteNote(flagId, datetime);
+		try {
+			await Flags.deleteNote(flagId, datetime);
+		} catch (e) {
+			// Do not throw if note doesn't exist
+			if (!e.message === '[[error:invalid-data]]') {
+				throw e;
+			}
+		}
 	}
 	datetime = datetime || Date.now();
 

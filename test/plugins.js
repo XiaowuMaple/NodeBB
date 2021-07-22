@@ -47,7 +47,7 @@ describe('Plugins', () => {
 		});
 	});
 
-	it('should register and fire a filter hook having 2 methods, one returning a promise, one calling the callback', async () => {
+	it('should register and fire a filter hook having 3 methods, one returning a promise, one calling the callback and one just returning', async () => {
 		function method1(data, callback) {
 			data.foo += 1;
 			callback(null, data);
@@ -58,12 +58,36 @@ describe('Plugins', () => {
 				resolve(data);
 			});
 		}
+		function method3(data) {
+			data.foo += 1;
+			return data;
+		}
 
 		plugins.hooks.register('test-plugin', { hook: 'filter:test.hook2', method: method1 });
 		plugins.hooks.register('test-plugin', { hook: 'filter:test.hook2', method: method2 });
+		plugins.hooks.register('test-plugin', { hook: 'filter:test.hook2', method: method3 });
 
 		const data = await plugins.hooks.fire('filter:test.hook2', { foo: 1 });
-		assert.strictEqual(data.foo, 7);
+		assert.strictEqual(data.foo, 8);
+	});
+
+	it('should not error with invalid hooks', async () => {
+		function method1(data, callback) {
+			data.foo += 1;
+			return data;
+		}
+		function method2(data, callback) {
+			data.foo += 2;
+			// this is invalid
+			callback(null, data);
+			return data;
+		}
+
+		plugins.hooks.register('test-plugin', { hook: 'filter:test.hook3', method: method1 });
+		plugins.hooks.register('test-plugin', { hook: 'filter:test.hook3', method: method2 });
+
+		const data = await plugins.hooks.fire('filter:test.hook3', { foo: 1 });
+		assert.strictEqual(data.foo, 4);
 	});
 
 	it('should register and fire a filter hook that returns a promise that gets rejected', (done) => {
@@ -73,8 +97,8 @@ describe('Plugins', () => {
 				reject(new Error('nope'));
 			});
 		}
-		plugins.hooks.register('test-plugin', { hook: 'filter:test.hook3', method: method });
-		plugins.hooks.fire('filter:test.hook3', { foo: 1 }, (err) => {
+		plugins.hooks.register('test-plugin', { hook: 'filter:test.hook4', method: method });
+		plugins.hooks.fire('filter:test.hook4', { foo: 1 }, (err) => {
 			assert(err);
 			done();
 		});

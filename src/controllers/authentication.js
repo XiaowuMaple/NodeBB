@@ -183,7 +183,7 @@ authenticationController.registerComplete = function (req, res, next) {
 		const results = await Promise.allSettled(callbacks.map(async (cb) => {
 			await cb(req.session.registration, req.body);
 		}));
-		const errors = results.map(result => result.status === 'rejected').filter(Boolean);
+		const errors = results.map(result => result.status === 'rejected' && result.reason && result.reason.message).filter(Boolean);
 		if (errors.length) {
 			req.flash('errors', errors);
 			return res.redirect(`${nconf.get('relative_path')}/register/complete`);
@@ -326,12 +326,16 @@ authenticationController.doLogin = async function (req, uid) {
 		return;
 	}
 	const loginAsync = util.promisify(req.login).bind(req);
-	const regenerateSession = util.promisify(req.session.regenerate).bind(req.session);
 
-	const sessionData = { ...req.session };
-	await regenerateSession();
-	for (const [prop, value] of Object.entries(sessionData)) {
-		req.session[prop] = value;
+	const { reroll } = req.res.locals;
+	if (reroll !== false) {
+		const regenerateSession = util.promisify(req.session.regenerate).bind(req.session);
+
+		const sessionData = { ...req.session };
+		await regenerateSession();
+		for (const [prop, value] of Object.entries(sessionData)) {
+			req.session[prop] = value;
+		}
 	}
 
 	await loginAsync({ uid: uid });
@@ -356,6 +360,7 @@ authenticationController.onSuccessfulLogin = async function (req, uid) {
 		await meta.blacklist.test(req.ip);
 		await user.logIP(uid, req.ip);
 		await user.bans.unbanIfExpired([uid]);
+		await user.reset.cleanByUid(uid);
 
 		req.session.meta = {};
 

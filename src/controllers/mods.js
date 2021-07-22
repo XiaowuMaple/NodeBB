@@ -13,7 +13,7 @@ const helpers = require('./helpers');
 const modsController = module.exports;
 modsController.flags = {};
 
-modsController.flags.list = async function (req, res, next) {
+modsController.flags.list = async function (req, res) {
 	const validFilters = ['assignee', 'state', 'reporterId', 'type', 'targetUid', 'cid', 'quick', 'page', 'perPage'];
 	const validSorts = ['newest', 'oldest', 'reports', 'upvotes', 'downvotes', 'replies'];
 
@@ -27,7 +27,7 @@ modsController.flags.list = async function (req, res, next) {
 	let [,, { filters }] = results;
 
 	if (!(isAdminOrGlobalMod || !!moderatedCids.length)) {
-		return next(new Error('[[error:no-privileges]]'));
+		return helpers.notAllowed(req, res);
 	}
 
 	if (!isAdminOrGlobalMod && moderatedCids.length) {
@@ -36,7 +36,7 @@ modsController.flags.list = async function (req, res, next) {
 
 	// Parse query string params for filters, eliminate non-valid filters
 	filters = filters.reduce((memo, cur) => {
-		if (req.query.hasOwnProperty(cur)) {
+		if (req.query.hasOwnProperty(cur) && typeof req.query[cur] === 'string') {
 			if (req.query[cur].trim() !== '') {
 				memo[cur] = req.query[cur].trim();
 			}
@@ -83,6 +83,7 @@ modsController.flags.list = async function (req, res, next) {
 			filters: filters,
 			sort: sort,
 			uid: req.uid,
+			query: req.query,
 		}),
 		analytics.getDailyStatsForSet('analytics:flags', Date.now(), 30),
 		helpers.getSelectedCategory(filters.cid),
@@ -112,10 +113,8 @@ modsController.flags.detail = async function (req, res, next) {
 	});
 	results.privileges = { ...results.privileges[0], ...results.privileges[1] };
 
-	if (!results.flagData) {
-		return next(new Error('[[error:invalid-data]]'));
-	} else if (!(results.isAdminOrGlobalMod || !!results.moderatedCids.length)) {
-		return next(new Error('[[error:no-privileges]]'));
+	if (!results.flagData || (!(results.isAdminOrGlobalMod || !!results.moderatedCids.length))) {
+		return next();	// 404
 	}
 
 	if (results.flagData.type === 'user') {
@@ -164,13 +163,13 @@ modsController.postQueue = async function (req, res, next) {
 		helpers.getSelectedCategory(cid),
 	]);
 
-	if (cid && !moderatedCids.includes(String(cid)) && !isAdminOrGlobalMod) {
+	if (cid && !moderatedCids.includes(Number(cid)) && !isAdminOrGlobalMod) {
 		return next();
 	}
 
 	postData = postData.filter(p => p &&
 		(!categoriesData.selectedCids.length || categoriesData.selectedCids.includes(p.category.cid)) &&
-		(isAdminOrGlobalMod || moderatedCids.includes(String(p.category.cid))));
+		(isAdminOrGlobalMod || moderatedCids.includes(Number(p.category.cid))));
 
 	({ posts: postData } = await plugins.hooks.fire('filter:post-queue.get', {
 		posts: postData,
